@@ -9,25 +9,32 @@
 #ifndef __PPOS_TCB__
 #define __PPOS_TCB__
 
+#include "ctx.h"
+
+#define STACK_SIZE 16 * 1024
+
 // Status possíveis da tarefa
 typedef enum {
-    READY = 0,
-    EXEC = 1,
-    DONE = 2,
-}Task_status;
-
-task_t task_kernel;
-task_t* task_atual; 
+    READY,
+    EXEC,
+    SUSP,
+    DONE,
+} Task_status;
 
 // Task Control Block (TCB), infos sobre uma tarefa
 struct task_t
 {
     int id;         // identificador da tarefa
     char *name;     // nome da tarefa
-    ctx_t context;  // contexto da tarefa
-    int status;     // pronta, executando, ...
-    task_t* parent; // pai da task atual
+    struct ctx_t* context;  // contexto da tarefa
+    Task_status status;     // pronta, executando, ...
+    struct task_t* parent; // pai da task atual
     // ...             // demais informações, a completar
 };
+
+extern struct task_t task_kernel; 
+extern struct task_t* task_atual; // ponteiro para a a task atual sendo executada
+
+extern int id_i; // id da última task criada
 
 #endif

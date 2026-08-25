@@ -14,5 +14,10 @@ void dispatcher_term()
 
 void dispatcher()
 {
+    task_user = task_create("user", user_main, NULL);
+    if (!task_user)
+        return;
+    task_switch(task_user);
+    task_destroy(task_user);
 }
 
