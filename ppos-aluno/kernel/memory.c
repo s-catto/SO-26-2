@@ -7,6 +7,9 @@
 // somente para a implementação trivial
 #include <stdlib.h>
 
+#define NOERROR 0
+#define ERROR -1
+
 // implementação trivial, a ser substituída
 void *mem_alloc(int size)
 {
@@ -17,7 +20,7 @@ void *mem_alloc(int size)
 int mem_free(void *addr)
 {
     free(addr);
-    return (NOERROR);
+    return NOERROR;
 }
 
 void mem_init()

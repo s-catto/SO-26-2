@@ -5,6 +5,7 @@
 // Gerência básica de tarefas.
 
 #include "task.h"
+#include "memory.h"
 #include <stdlib.h>
 
 void task_init()
@@ -27,19 +28,25 @@ void task_init()
 struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     
     // Aloca a task
-    struct task_t* task = malloc(sizeof(struct task_t));
+    struct task_t* task = mem_alloc(sizeof(struct task_t));
     if (!task)
         return NULL;
 
     // Aloca a stack
-    void* stack = aligned_alloc(16, sizeof(STACK_SIZE));
-    if (!stack)
+    void* stack = mem_alloc(STACK_SIZE);
+    if (!stack) {
+        mem_free(task);
         return NULL;
+    }
 
     // Preenche a task
     task->name = name;
     task->id = ++id_i;
-    ctx_create(task->context, entry, arg, stack, STACK_SIZE);;
+    if( ctx_create(task->context, entry, arg, stack, STACK_SIZE) == ERROR ) {
+        mem_free(stack);
+        mem_free(task);
+        return NULL;
+    }
     task->status = READY;
     task->parent = task_atual;
 
@@ -51,8 +58,8 @@ int task_destroy(struct task_t *task) {
         return NOERROR;
 
     // Free na stack e na struct
-    free(task->context->stack);
-    free(task);
+    mem_free(task->context->stack);
+    mem_free(task);
 
     return NOERROR;
 }
@@ -69,25 +76,6 @@ char *task_name(struct task_t *task) {
         return task->name;
 
     return task_atual->name;
-}
-
-int task_switch(struct task_t *task) {
-    struct task_t* task_prox;
-
-    if (task) {
-        task_prox = task;
-    } else {
-        task_prox = task_atual->parent;
-    }
-
-    task_atual->status = SUSP;
-    task_prox->status = EXEC;
-
-    ctx_switch(task_atual->context, task_prox->context);
-
-    task_atual = task_prox;
-
-    return NOERROR;
 }
 
 void task_term()
