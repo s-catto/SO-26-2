@@ -15,7 +15,8 @@ void dispatcher_init()
 }
 
 int task_switch(struct task_t *task) {
-    struct task_t* task_prox;  
+    struct task_t *task_prox;
+    struct task_t *task_anterior;
 
     if (task) {
         task_prox = task;
@@ -23,31 +24,34 @@ int task_switch(struct task_t *task) {
         task_prox = task_atual->parent;
     }
 
-    printk("%s\n", task_prox->name);
+    if (!task_prox)
+        return ERROR;
+ 
+    task_anterior = task_atual;
 
-    task_atual->status = SUSP;
+    task_anterior->status = SUSP;
     task_prox->status = EXEC;
 
-    printk("%d", ctx_switch(&task_atual->context, &task_prox->context));
+    task_atual = task_prox;
 
-    /*if (ctx_switch(&task_atual->context, &task_prox->context) == ERROR) {
+    if (ctx_switch(&task_anterior->context,
+                   &task_prox->context) == ERROR)
+    {
         printk("ops\n");
         return ERROR;
-    }*/
+    }
 
     return NOERROR;
 }
-
 void dispatcher_term()
 {
 }
 
 void dispatcher()
 {
-    struct task_t* task_user = task_create("user", user_main, NULL);
+    struct task_t* task_user = task_create("user_main", user_main, NULL);
     if (!task_user)
         return;
-    printk("oiiiii\n");
     task_switch(task_user);
     task_destroy(task_user);
 }

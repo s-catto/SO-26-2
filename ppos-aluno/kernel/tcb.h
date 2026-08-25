@@ -15,10 +15,11 @@
 
 // Status possíveis da tarefa
 typedef enum {
+    NEW,
     READY,
     EXEC,
     SUSP,
-    DONE,
+    TERM,
 } Task_status;
 
 // Task Control Block (TCB), infos sobre uma tarefa

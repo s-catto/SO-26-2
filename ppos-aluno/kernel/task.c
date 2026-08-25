@@ -24,6 +24,7 @@ void task_init()
     // Aponta task atual para task kernel
     task_atual = &task_kernel;
 
+    // Inicializa o id da última task criada ('0' por ser a primeira)
     id_i = 0;
 
     return;
