@@ -26,7 +26,7 @@ struct task_t
 {
     int id;         // identificador da tarefa
     char *name;     // nome da tarefa
-    struct ctx_t* context;  // contexto da tarefa
+    struct ctx_t context;  // contexto da tarefa
     Task_status status;     // pronta, executando, ...
     struct task_t* parent; // pai da task atual
     // ...             // demais informações, a completar

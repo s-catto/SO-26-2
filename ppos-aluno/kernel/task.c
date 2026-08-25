@@ -7,6 +7,7 @@
 #include "task.h"
 #include "memory.h"
 #include <stdlib.h>
+#include "lib/pplibc.h"
 
 struct task_t task_kernel;
 struct task_t *task_atual;
@@ -33,8 +34,8 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     // Aloca a task
     struct task_t* task = mem_alloc(sizeof(struct task_t));
     if (!task)
-        return NULL;
-
+        return NULL;  
+    
     // Aloca a stack
     void* stack = mem_alloc(STACK_SIZE);
     if (!stack) {
@@ -44,12 +45,14 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
 
     // Preenche a task
     task->name = name;
-    task->id = ++id_i;
-    if( ctx_create(task->context, entry, arg, stack, STACK_SIZE) == ERROR ) {
+    task->id = ++id_i;   
+
+    if( ctx_create(&(task->context), entry, arg, stack, STACK_SIZE) == ERROR) {
         mem_free(stack);
         mem_free(task);
         return NULL;
-    }
+    } 
+    
     task->status = READY;
     task->parent = task_atual;
 
@@ -61,7 +64,7 @@ int task_destroy(struct task_t *task) {
         return NOERROR;
 
     // Free na stack e na struct
-    mem_free(task->context->stack);
+    mem_free(task->context.stack);
     mem_free(task);
 
     return NOERROR;
