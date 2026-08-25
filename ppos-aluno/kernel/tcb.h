@@ -6,6 +6,9 @@
 
 // Descritor de tarefas (TCB - Task Control Block).
 
+// GRR20221224 Seijiro Yanagiya Midzuno
+// GRR20232333 Sofia Barbosa Candiotto
+
 #ifndef __PPOS_TCB__
 #define __PPOS_TCB__
 

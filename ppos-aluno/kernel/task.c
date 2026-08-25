@@ -4,6 +4,9 @@
 
 // Gerência básica de tarefas.
 
+// GRR20221224 Seijiro Yanagiya Midzuno
+// GRR20232333 Sofia Barbosa Candiotto
+
 #include "task.h"
 #include "memory.h"
 #include <stdlib.h>

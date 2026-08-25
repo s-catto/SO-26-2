@@ -4,6 +4,9 @@
 
 // Dispatcher: gerencia os estados das tarefas.
 
+// GRR20221224 Seijiro Yanagiya Midzuno
+// GRR20232333 Sofia Barbosa Candiotto 
+
 #include <stddef.h>
 #include "lib/pplibc.h"
 #include "task.h"
