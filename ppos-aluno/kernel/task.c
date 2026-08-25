@@ -8,9 +8,12 @@
 #include "memory.h"
 #include <stdlib.h>
 
+struct task_t task_kernel;
+struct task_t *task_atual;
+int id_i;
+
 void task_init()
 {
-    struct task_t task_kernel;
     // Inicia a task kernel
     task_kernel.id = 0;
     task_kernel.name = "kernel";
@@ -18,9 +21,9 @@ void task_init()
     task_kernel.parent = NULL;
 
     // Aponta task atual para task kernel
-    struct task_t *task_atual = &task_kernel;
+    task_atual = &task_kernel;
 
-    int id_i = 0;
+    id_i = 0;
 
     return;
 }

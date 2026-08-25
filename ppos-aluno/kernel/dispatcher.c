@@ -5,6 +5,7 @@
 // Dispatcher: gerencia os estados das tarefas.
 
 #include <stddef.h>
+#include "task.h"
 
 void user_main(void *arg);
 
@@ -37,7 +38,7 @@ void dispatcher_term()
 
 void dispatcher()
 {
-    task_user = task_create("user", user_main, NULL);
+    struct task_t* task_user = task_create("user", user_main, NULL);
     if (!task_user)
         return;
     task_switch(task_user);
