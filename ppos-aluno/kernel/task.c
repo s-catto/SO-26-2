@@ -88,4 +88,3 @@ char *task_name(struct task_t *task) {
 void task_term()
 {
 }
-

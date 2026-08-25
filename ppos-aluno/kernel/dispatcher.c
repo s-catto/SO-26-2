@@ -18,6 +18,7 @@ int task_switch(struct task_t *task) {
     struct task_t *task_prox;
     struct task_t *task_anterior;
 
+    // se for NULL, muda para a task mãe
     if (task) {
         task_prox = task;
     } else {
@@ -29,17 +30,14 @@ int task_switch(struct task_t *task) {
  
     task_anterior = task_atual;
 
+    // muda os status das tasks
     task_anterior->status = SUSP;
     task_prox->status = EXEC;
 
     task_atual = task_prox;
 
-    if (ctx_switch(&task_anterior->context,
-                   &task_prox->context) == ERROR)
-    {
-        printk("ops\n");
+    if (ctx_switch(&task_anterior->context, &task_prox->context) == ERROR)
         return ERROR;
-    }
 
     return NOERROR;
 }
