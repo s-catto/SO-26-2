@@ -58,7 +58,11 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     } 
     
     task->status = READY;
-    task->parent = task_atual;
+    task->parent = &task_kernel;
+    
+    // Adiciona a tarefa à fila de prontas
+    extern void enqueue_task(struct task_t *task);
+    enqueue_task(task);
 
     return task;
 }
