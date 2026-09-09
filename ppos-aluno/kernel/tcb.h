@@ -28,12 +28,13 @@ typedef enum {
 // Task Control Block (TCB), infos sobre uma tarefa
 struct task_t
 {
-    int id;         // identificador da tarefa
-    char *name;     // nome da tarefa
-    struct ctx_t context;  // contexto da tarefa
+    int id;                 // identificador da tarefa
+    char *name;             // nome da tarefa
+    struct ctx_t context;   // contexto da tarefa
     Task_status status;     // pronta, executando, ...
-    struct task_t* parent; // pai da task atual
-    // ...             // demais informações, a completar
+    struct task_t* parent;  // pai da tarefa
+    int prio;               // prioridade da tarefa
+    // ...                  // demais informações, a completar
 };
 
 extern struct task_t task_kernel; 

@@ -7,7 +7,7 @@
 // Implementação do TAD fila genérica
 
 // GRR20221224 Seijiro Yanagiya Midzuno
-// GRR20232333 Sofia Barbosa Candiotto 
+// GRR20232333 Sofia Barbosa Candiotto
 
 #include "queue.h"
 #include <stdlib.h>

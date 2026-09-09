@@ -28,5 +28,5 @@ void sched_setprio(struct task_t *task, int prio);
 
 // obtém a prioridade de uma tarefa (da tarefa atual se task == NULL)
 int sched_getprio(struct task_t *task);
-
+ 
 #endif

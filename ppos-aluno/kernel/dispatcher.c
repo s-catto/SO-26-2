@@ -16,7 +16,7 @@
 extern void user_main(void *arg);
 
 // Fila de tarefas prontas
-static struct queue_t *ready_queue = NULL;
+struct queue_t *ready_queue;
 
 // Contador de tarefas de usuário
 static int user_tasks = 0;
@@ -189,9 +189,5 @@ void dispatcher()
             }
         }
     }
-    
-    // Destrói a tarefa inicial do usuário (se ainda existir)
-    if (task_user && task_user->status != TERM)
-        task_destroy(task_user);
 }
 
