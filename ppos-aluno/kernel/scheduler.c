@@ -33,20 +33,20 @@ struct task_t *scheduler(struct queue_t *ready_queue)
 
     // escolhe a task mais prioritária
     while (task != NULL) {
-        if (sched_getprio(task) > sched_getprio(chosen))
+        if (task->priod < chosen->priod)
             chosen = task;
         task = queue_next(ready_queue);
     }
 
-    // retira da fila a task escolhida
+    // retira da fila a task escolhida e reseta a prioridade
     queue_del(ready_queue, chosen);
-
+    chosen->priod = sched_getprio(chosen);
 
     // envelhece as outras tasks
     task = queue_head(ready_queue);
     while (task != NULL) {
-        if (sched_getprio(task) < 20)
-            sched_setprio(task, sched_getprio(task) + 1);
+        if (task->priod > - 0)
+            task->priod = task->priod - 1;
 
         task = queue_next(ready_queue);
     }
@@ -58,11 +58,11 @@ struct task_t *scheduler(struct queue_t *ready_queue)
 void sched_setprio(struct task_t *task, int prio)
 {
     if (task == NULL) {
-        task_atual->prio = prio;
+        task_atual->prioe = prio;
         return;
     }
     
-    task->prio = prio;
+    task->prioe = prio;
 
     return;
 }
@@ -71,8 +71,8 @@ void sched_setprio(struct task_t *task, int prio)
 int sched_getprio(struct task_t *task)
 {
     if (task == NULL)
-        return task_atual->prio;
+        return task_atual->prioe;
     
-    return task->prio;
+    return task->prioe;
 }
 

@@ -33,7 +33,8 @@ struct task_t
     struct ctx_t context;   // contexto da tarefa
     Task_status status;     // pronta, executando, ...
     struct task_t* parent;  // pai da tarefa
-    int prio;               // prioridade da tarefa
+    int priod;               // prioridade dinamica da tarefa
+    int prioe;               // prioridade estática da tarefa
     // ...                  // demais informações, a completar
 };
 
