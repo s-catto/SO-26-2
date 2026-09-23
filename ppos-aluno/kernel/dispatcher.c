@@ -39,6 +39,7 @@ void dispatcher_init()
 }
 
 int task_switch(struct task_t *task) {
+
     struct task_t *task_prox;
     struct task_t *task_anterior;
 
@@ -58,8 +59,17 @@ int task_switch(struct task_t *task) {
     task_anterior = task_atual;
     task_atual = task_prox;
 
+    // Calcula e incrementa o tempo de execução da task anterior
+    task_anterior->exec_time += (time() - task_anterior->act_time);
+    task_anterior->act_time = -1; // Invalida o tempo da última ativação
+    
+    // Guarda o momento de ativação da task atual
+    task_atual->act_time = time();
+    task_atual->acts++; // Incrementa o número de ativações
+
     if (ctx_switch(&task_anterior->context, &task_prox->context) == ERROR)
         return ERROR;
+
 
     return NOERROR;
 }
@@ -75,7 +85,7 @@ void task_run(struct task_t *task)
     // Muda o status para EXEC
     task->status = EXEC;
     task->quantum = QUANTUM;
-    
+
     // Transfere a CPU para ela
     task_switch(task);
 }
@@ -143,12 +153,24 @@ void task_exit(int exit_code)
     
     // Muda o estado para TERMINADA
     current->status = TERM;
+    current->exit_code = exit_code;
     
     // Decrementa o contador de tarefas de usuário
     user_tasks--;
     
     // Retorna ao kernel
     task_switch(NULL);
+}
+
+void print_time (struct task_t* task) {
+    // Se a task é nula, printa as informações da task atual
+    if (!task)
+        task = task_atual;
+    
+    printk("PPOS: task %3d (%s) %6d ms run, %6d ms cpu, %5d acts, exit code %3d\n", 
+        task->id, task->name, time() - task->birth_time, task->exec_time, task->acts, task->exit_code);
+    
+    return;
 }
 
 void dispatcher_term()
@@ -183,6 +205,7 @@ void dispatcher()
                         break;
                     case TERM:
                         // A tarefa terminou, destrói-a
+                        print_time(next);
                         task_destroy(next);
                         break;
                     case SUSP:
@@ -194,5 +217,7 @@ void dispatcher()
             }
         }
     }
+
+    print_time(NULL);
 }
 

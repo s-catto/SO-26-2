@@ -32,10 +32,18 @@ struct task_t
     char *name;             // nome da tarefa
     struct ctx_t context;   // contexto da tarefa
     Task_status status;     // pronta, executando, ...
+    int exit_code;          // saída
     struct task_t* parent;  // pai da tarefa
+    
     int priod;               // prioridade dinamica da tarefa
     int prioe;               // prioridade estática da tarefa
+    
     int quantum;             // ticks restantes no quantum atual
+    int birth_time;          // "horário" de nascimento
+    int act_time;            // "horario" da última ativação
+    int exec_time;           // tempo de execução
+    int acts;                // ativações
+    
     // ...                  // demais informações, a completar
 };
 

@@ -10,6 +10,9 @@
 #include "tcb.h"
 #include "scheduler.h"
 
+#include <stddef.h>
+#include "lib/pplibc.h"
+
 extern struct queue_t *ready_queue;
 
 void sched_init()
@@ -59,10 +62,12 @@ void sched_setprio(struct task_t *task, int prio)
 {
     if (task == NULL) {
         task_atual->prioe = prio;
+        task_atual->priod = prio;
         return;
     }
     
     task->prioe = prio;
+    task->priod = prio;
 
     return;
 }

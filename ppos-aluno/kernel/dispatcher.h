@@ -13,8 +13,6 @@
 #include "lib/queue.h"
 #include "tcb.h"
 
-extern struct queue_t *ready_queue;
-
 // inicia o subsistema dispatcher
 // (chamada pelo núcleo na inicialização).
 void dispatcher_init();

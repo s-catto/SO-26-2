@@ -4,6 +4,9 @@
 
 // Gerência básica do tempo.
 
+// GRR20221224 Seijiro Yanagiya Midzuno
+// GRR20232333 Sofia Barbosa Candiotto 
+
 #include <stddef.h>
 #include "hardware/cpu.h"
 #include "lib/queue.h"
@@ -28,7 +31,9 @@ void time_tick(int sig)
     if (task_atual->quantum > 0)
         task_atual->quantum--;
 
-    if (task_atual->quantum == 0) {
+    // Se o quantum acabou e a task é de usuário
+    // reseta o quantum da task e a reinsere na fila de prontas 
+    if (task_atual->quantum == 0 && task_atual->id > 0) {
         task_atual->status = READY;
         task_atual->quantum = QUANTUM;
         task_yield();

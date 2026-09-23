@@ -25,6 +25,11 @@ void task_init()
     task_kernel.status = EXEC;
     task_kernel.parent = NULL;
 
+    task_kernel.birth_time = time();
+    task_kernel.act_time = 0;
+    task_kernel.exec_time = 0;           
+    task_kernel.acts = 1; 
+
     // Aponta task atual para task kernel
     task_atual = &task_kernel;
 
@@ -60,9 +65,15 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     
     task->status = READY;
     task->parent = &task_kernel;
+
     task->prioe = 0;
     task->priod = task->prioe;
+
     task->quantum = QUANTUM;
+    task->birth_time = time();
+    task->act_time = -1;
+    task->exec_time = 0;           
+    task->acts = 0; 
     
     // Adiciona a tarefa à fila de prontas
     extern void enqueue_task(struct task_t *task);
