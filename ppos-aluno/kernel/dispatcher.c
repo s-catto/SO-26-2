@@ -12,6 +12,7 @@
 #include "lib/queue.h"
 #include "task.h"
 #include "scheduler.h"
+#include "time.h"
 
 extern void user_main(void *arg);
 
@@ -40,6 +41,9 @@ void dispatcher_init()
 int task_switch(struct task_t *task) {
     struct task_t *task_prox;
     struct task_t *task_anterior;
+
+    if (task_atual == NULL)
+        return ERROR;
 
     // se for NULL, muda para a task mãe
     if (task) {
@@ -70,6 +74,7 @@ void task_run(struct task_t *task)
     
     // Muda o status para EXEC
     task->status = EXEC;
+    task->quantum = QUANTUM;
     
     // Transfere a CPU para ela
     task_switch(task);

@@ -8,6 +8,7 @@
 // GRR20232333 Sofia Barbosa Candiotto
 
 #include "task.h"
+#include "time.h"
 #include "memory.h"
 #include <stdlib.h>
 #include "lib/pplibc.h"
@@ -61,6 +62,7 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     task->parent = &task_kernel;
     task->prioe = 0;
     task->priod = task->prioe;
+    task->quantum = QUANTUM;
     
     // Adiciona a tarefa à fila de prontas
     extern void enqueue_task(struct task_t *task);

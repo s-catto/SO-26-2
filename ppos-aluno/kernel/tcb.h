@@ -35,6 +35,7 @@ struct task_t
     struct task_t* parent;  // pai da tarefa
     int priod;               // prioridade dinamica da tarefa
     int prioe;               // prioridade estática da tarefa
+    int quantum;             // ticks restantes no quantum atual
     // ...                  // demais informações, a completar
 };
 
