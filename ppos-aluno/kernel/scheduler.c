@@ -48,7 +48,7 @@ struct task_t *scheduler(struct queue_t *ready_queue)
     // envelhece as outras tasks
     task = queue_head(ready_queue);
     while (task != NULL) {
-        if (task->priod >= 0)
+        if (task->priod >= -20)
             task->priod = task->priod - 1;
 
         task = queue_next(ready_queue);
