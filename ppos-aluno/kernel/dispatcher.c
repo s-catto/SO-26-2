@@ -136,17 +136,15 @@ void task_awake(struct task_t *task)
     if (!task || !ready_queue)
         return;
 
-    if (task->status == SUSP) {
-        if (queue_has(ready_queue, task))
-            queue_del(ready_queue, task);
+    if (queue_has(ready_queue, task))
+        queue_del(ready_queue, task);
 
-        if (sleep_queue != NULL && queue_has(sleep_queue, task))
-            queue_del(sleep_queue, task);
+    if (sleep_queue != NULL && queue_has(sleep_queue, task))
+        queue_del(sleep_queue, task);
 
-        task->status = READY;
-        task->wake_time = 0;
-        queue_add(ready_queue, task);
-    }
+    task->status = READY;
+    task->wake_time = 0;
+    queue_add(ready_queue, task);
 }
 
 void task_exit(int exit_code)
@@ -203,6 +201,20 @@ void dispatcher()
     
     // Enquanto houver tarefas de usuário
     while (user_tasks > 0) {
+
+        if (sleep_queue != NULL) {
+            struct task_t *task = queue_head(sleep_queue);
+            while (task != NULL) {
+                //printk("%d, %d, %d\n", task->id, task->wake_time, time());
+                if (task->wake_time <= time()) {
+                    queue_del(sleep_queue, task);
+                    task_awake(task);
+                } else {
+                    task = queue_next(sleep_queue);
+                }
+            }
+        }
+
         // Escolhe a próxima tarefa a executar
         struct task_t *next = scheduler(ready_queue);
         
@@ -231,6 +243,7 @@ void dispatcher()
                 }
             }
         }
+
     }
 
     print_time(NULL);

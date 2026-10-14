@@ -8,8 +8,10 @@
 // GRR20232333 Sofia Barbosa Candiotto 
 
 #include <stddef.h>
+#include <stdio.h>
 #include "hardware/cpu.h"
 #include "lib/queue.h"
+#include "lib/pplibc.h"
 #include "dispatcher.h"
 #include "time.h"
 #include "task.h"
@@ -31,17 +33,7 @@ void time_tick(int sig)
 
     elapsed_time += TICK;
 
-    if (sleep_queue != NULL) {
-        struct task_t *task = queue_head(sleep_queue);
-        while (task != NULL) {
-            struct task_t *next = queue_next(sleep_queue);
-            if (task->wake_time <= elapsed_time) {
-                queue_del(sleep_queue, task);
-                task_awake(task);
-            }
-            task = next;
-        }
-    }
+    printk("oii\n");
 
     if (task_atual->quantum > 0)
         task_atual->quantum--;
@@ -52,8 +44,7 @@ void time_tick(int sig)
     if (task_atual->quantum == 0 && task_atual->id > 0) {
         task_atual->status = READY;
         task_atual->quantum = QUANTUM;
-        if (!queue_has(ready_queue, task_atual))
-            queue_add(ready_queue, task_atual);
+        task_yield();
     }
 }
 

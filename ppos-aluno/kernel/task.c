@@ -164,10 +164,7 @@ void task_sleep(int t)
     task_atual->status = SUSP;
     task_atual->wake_time = time() + (unsigned int)t;
 
-    if (sleep_queue != NULL && !queue_has(sleep_queue, task_atual))
-        queue_add(sleep_queue, task_atual);
-
-    task_switch(NULL);
+    task_suspend(sleep_queue);
 }
 
 void task_term()

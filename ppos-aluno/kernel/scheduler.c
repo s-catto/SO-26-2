@@ -34,6 +34,9 @@ struct task_t *scheduler(struct queue_t *ready_queue)
     struct task_t *chosen = queue_head(ready_queue);
     struct task_t *task = queue_next(ready_queue);
 
+    if(!chosen)
+        return NULL;
+
     // escolhe a task mais prioritária
     while (task != NULL) {
         if (task->priod < chosen->priod)
