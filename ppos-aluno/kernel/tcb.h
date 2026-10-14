@@ -47,6 +47,8 @@ struct task_t
 
     struct queue_t *wait_queue; // fila de tarefas que aguardam minha conclusão
     int wait_code;             // código de saída retornado ao waiter
+
+    unsigned int wake_time;    // instante em que a tarefa deve acordar
     // ...                  // demais informações, a completar
 };
 

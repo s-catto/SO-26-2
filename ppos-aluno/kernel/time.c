@@ -16,6 +16,9 @@
 
 static unsigned int elapsed_time = 0;
 
+extern struct queue_t *ready_queue;
+extern struct queue_t *sleep_queue;
+
 void time_tick(int sig)
 {
     (void)sig;
@@ -28,15 +31,29 @@ void time_tick(int sig)
 
     elapsed_time += TICK;
 
+    if (sleep_queue != NULL) {
+        struct task_t *task = queue_head(sleep_queue);
+        while (task != NULL) {
+            struct task_t *next = queue_next(sleep_queue);
+            if (task->wake_time <= elapsed_time) {
+                queue_del(sleep_queue, task);
+                task_awake(task);
+            }
+            task = next;
+        }
+    }
+
     if (task_atual->quantum > 0)
         task_atual->quantum--;
 
     // Se o quantum acabou e a task é de usuário
-    // reseta o quantum da task e a reinsere na fila de prontas 
+    // reseta o quantum da task e a reinsere na fila de prontas.
+    // A troca de contexto não deve ocorrer no próprio handler do timer.
     if (task_atual->quantum == 0 && task_atual->id > 0) {
         task_atual->status = READY;
         task_atual->quantum = QUANTUM;
-        task_yield();
+        if (!queue_has(ready_queue, task_atual))
+            queue_add(ready_queue, task_atual);
     }
 }
 

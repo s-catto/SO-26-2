@@ -15,6 +15,7 @@
 #include "time.h"
 
 extern void user_main(void *arg);
+extern struct queue_t *sleep_queue;
 
 // Fila de tarefas prontas
 struct queue_t *ready_queue;
@@ -139,7 +140,11 @@ void task_awake(struct task_t *task)
         if (queue_has(ready_queue, task))
             queue_del(ready_queue, task);
 
+        if (sleep_queue != NULL && queue_has(sleep_queue, task))
+            queue_del(sleep_queue, task);
+
         task->status = READY;
+        task->wake_time = 0;
         queue_add(ready_queue, task);
     }
 }

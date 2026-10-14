@@ -20,6 +20,7 @@ struct task_t *task_atual;
 int id_i;
 
 extern struct queue_t *ready_queue;
+struct queue_t *sleep_queue;
 
 void task_init()
 {
@@ -35,6 +36,9 @@ void task_init()
     task_kernel.acts = 1;
     task_kernel.wait_queue = queue_create();
     task_kernel.wait_code = NOERROR;
+    task_kernel.wake_time = 0;
+
+    sleep_queue = queue_create();
 
     // Aponta task atual para task kernel
     task_atual = &task_kernel;
@@ -78,6 +82,7 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
         return NULL;
     }
     task->wait_code = NOERROR;
+    task->wake_time = 0;
 
     task->prioe = 0;
     task->priod = task->prioe;
@@ -98,6 +103,9 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
 int task_destroy(struct task_t *task) {
     if (!task)
         return NOERROR;
+
+    if (sleep_queue != NULL && queue_has(sleep_queue, task))
+        queue_del(sleep_queue, task);
 
     if (task->wait_queue != NULL)
         queue_destroy(task->wait_queue);
@@ -145,8 +153,28 @@ int task_wait(struct task_t *task)
     return task_atual->wait_code;
 }
 
+void task_sleep(int t)
+{
+    if (t <= 0 || task_atual == NULL || task_atual == &task_kernel)
+        return;
+
+    if (queue_has(ready_queue, task_atual))
+        queue_del(ready_queue, task_atual);
+
+    task_atual->status = SUSP;
+    task_atual->wake_time = time() + (unsigned int)t;
+
+    if (sleep_queue != NULL && !queue_has(sleep_queue, task_atual))
+        queue_add(sleep_queue, task_atual);
+
+    task_switch(NULL);
+}
+
 void task_term()
 {
     if (task_kernel.wait_queue != NULL)
         queue_destroy(task_kernel.wait_queue);
+
+    if (sleep_queue != NULL)
+        queue_destroy(sleep_queue);
 }
