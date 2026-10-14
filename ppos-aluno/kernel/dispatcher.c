@@ -113,6 +113,10 @@ void task_suspend(struct queue_t *queue)
         return;
     
     struct task_t *current = task_atual;
+
+    // remove a tarefa da fila de prontas antes de suspendê-la
+    if (queue_has(ready_queue, current))
+        queue_del(ready_queue, current);
     
     // Ajusta o status para SUSPENSA
     current->status = SUSP;
@@ -130,16 +134,12 @@ void task_awake(struct task_t *task)
 {
     if (!task || !ready_queue)
         return;
-    
-    // Se a tarefa estiver suspensa em alguma fila, retira-a
-    // (percorre a fila da tarefa e remove se encontrar)
-    // Para isso, seria necessário saber em qual fila ela está
-    // Como não temos essa informação armazenada, vamos verificar se não está pronta
+
     if (task->status == SUSP) {
-        // Ajusta o status para PRONTA
+        if (queue_has(ready_queue, task))
+            queue_del(ready_queue, task);
+
         task->status = READY;
-        
-        // Insere na fila de prontas
         queue_add(ready_queue, task);
     }
 }
@@ -148,17 +148,27 @@ void task_exit(int exit_code)
 {
     if (!ready_queue)
         return;
-    
+
     struct task_t *current = task_atual;
-    
-    // Muda o estado para TERMINADA
+
     current->status = TERM;
     current->exit_code = exit_code;
-    
-    // Decrementa o contador de tarefas de usuário
+
+    while (queue_size(current->wait_queue) > 0) {
+        struct task_t *waiter = queue_head(current->wait_queue);
+
+        if (waiter == NULL)
+            break;
+
+        queue_del(current->wait_queue, waiter);
+        waiter->wait_code = current->exit_code;
+        waiter->status = READY;
+
+        if (!queue_has(ready_queue, waiter))
+            queue_add(ready_queue, waiter);
+    }
+
     user_tasks--;
-    
-    // Retorna ao kernel
     task_switch(NULL);
 }
 
@@ -204,9 +214,9 @@ void dispatcher()
                         // A tarefa continua pronta, já está na fila
                         break;
                     case TERM:
-                        // A tarefa terminou, destrói-a
+                        // A tarefa terminou; mantém o TCB até ser destruído
+                        // explicitamente pelo código de usuário ou pelo kernel.
                         print_time(next);
-                        task_destroy(next);
                         break;
                     case SUSP:
                         // A tarefa foi suspensa, já está em sua fila

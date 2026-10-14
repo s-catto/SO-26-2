@@ -8,14 +8,18 @@
 // GRR20232333 Sofia Barbosa Candiotto
 
 #include "task.h"
+#include "dispatcher.h"
 #include "time.h"
 #include "memory.h"
 #include <stdlib.h>
 #include "lib/pplibc.h"
+#include "lib/queue.h"
 
 struct task_t task_kernel;
 struct task_t *task_atual;
 int id_i;
+
+extern struct queue_t *ready_queue;
 
 void task_init()
 {
@@ -28,7 +32,9 @@ void task_init()
     task_kernel.birth_time = time();
     task_kernel.act_time = 0;
     task_kernel.exec_time = 0;           
-    task_kernel.acts = 1; 
+    task_kernel.acts = 1;
+    task_kernel.wait_queue = queue_create();
+    task_kernel.wait_code = NOERROR;
 
     // Aponta task atual para task kernel
     task_atual = &task_kernel;
@@ -65,6 +71,13 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
     
     task->status = READY;
     task->parent = &task_kernel;
+    task->wait_queue = queue_create();
+    if (task->wait_queue == NULL) {
+        mem_free(stack);
+        mem_free(task);
+        return NULL;
+    }
+    task->wait_code = NOERROR;
 
     task->prioe = 0;
     task->priod = task->prioe;
@@ -85,6 +98,9 @@ struct task_t * task_create(char *name, void (*entry)(void *), void *arg) {
 int task_destroy(struct task_t *task) {
     if (!task)
         return NOERROR;
+
+    if (task->wait_queue != NULL)
+        queue_destroy(task->wait_queue);
 
     // Free na stack e na struct
     mem_free(task->context.stack);
@@ -107,6 +123,30 @@ char *task_name(struct task_t *task) {
     return task_atual->name;
 }
 
+int task_wait(struct task_t *task)
+{
+    if (task == NULL || task == task_atual)
+        return ERROR;
+
+    if (task->status == TERM)
+        return task->exit_code;
+
+    if (queue_has(task->wait_queue, task_atual))
+        return task_atual->wait_code;
+
+    if (queue_has(ready_queue, task_atual))
+        queue_del(ready_queue, task_atual);
+
+    task_atual->wait_code = NOERROR;
+    task_atual->status = SUSP;
+    queue_add(task->wait_queue, task_atual);
+    task_switch(NULL);
+
+    return task_atual->wait_code;
+}
+
 void task_term()
 {
+    if (task_kernel.wait_queue != NULL)
+        queue_destroy(task_kernel.wait_queue);
 }

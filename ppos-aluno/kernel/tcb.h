@@ -13,6 +13,7 @@
 #define __PPOS_TCB__
 
 #include "ctx.h"
+#include "lib/queue.h"
 
 #define STACK_SIZE 16 * 1024
 
@@ -43,7 +44,9 @@ struct task_t
     int act_time;            // "horario" da última ativação
     int exec_time;           // tempo de execução
     int acts;                // ativações
-    
+
+    struct queue_t *wait_queue; // fila de tarefas que aguardam minha conclusão
+    int wait_code;             // código de saída retornado ao waiter
     // ...                  // demais informações, a completar
 };
 
