@@ -206,12 +206,9 @@ void dispatcher()
             struct task_t *task = queue_head(sleep_queue);
             while (task != NULL) {
                 //printk("%d, %d, %d\n", task->id, task->wake_time, time());
-                if (task->wake_time <= time()) {
-                    queue_del(sleep_queue, task);
+                if (task->wake_time <= time()) 
                     task_awake(task);
-                } else {
-                    task = queue_next(sleep_queue);
-                }
+                task = queue_next(sleep_queue);
             }
         }
 
