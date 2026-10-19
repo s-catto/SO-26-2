@@ -25,18 +25,21 @@ void time_tick(int sig)
 {
     (void)sig;
 
-    if (task_atual == NULL || task_atual == &task_kernel)
+    elapsed_time += TICK;
+
+    //printk("oii\n");
+
+    if (!task_atual)
+        return;
+
+    if (task_atual->quantum > 0)
+        task_atual->quantum--;
+
+    if (task_atual == &task_kernel)
         return;
 
     if (task_atual->status != EXEC)
         return;
-
-    elapsed_time += TICK;
-
-    printk("oii\n");
-
-    if (task_atual->quantum > 0)
-        task_atual->quantum--;
 
     // Se o quantum acabou e a task é de usuário
     // reseta o quantum da task e a reinsere na fila de prontas.
