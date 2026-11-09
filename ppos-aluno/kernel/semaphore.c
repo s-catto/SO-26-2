@@ -6,6 +6,14 @@
 
 #include <stdatomic.h>
 
+struct semaphore
+{
+    int lock;              // spinlock
+    int id;
+    int counter;
+    struct queue_t *queue; // fila de tarefas
+};
+
 // trava um spin-lock (busy wait)
 void spin_lock(int *lock) {
     int key = 1;
@@ -20,9 +28,29 @@ void spin_unlock(int *lock) {
 
 void sem_init()
 {
+    
 }
 
 void sem_term()
 {
 }
 
+int sem_create(int value) 
+{
+    
+}
+
+int sem_destroy(int sem_id) 
+{
+
+}
+
+int sem_down(int sem_id)
+{
+
+}
+
+int sem_up(int sem_id) 
+{
+
+}
