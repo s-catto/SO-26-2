@@ -6,6 +6,9 @@
 
 // Implementação do TAD Mapa de objetos
 
+// GRR20221224 Seijiro Yanagiya Midzuno
+// GRR20232333 Sofia Barbosa Candiotto
+
 #include <stdio.h>
 #include <stdlib.h>
 
